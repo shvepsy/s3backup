@@ -11,9 +11,12 @@ def s3init(aws_access_key_id,aws_secret_access_key,bucket_target):
         exit(1)
     return s3.Bucket(bucket_target)
 
-def mysql_backup(user,password,host,db,backup_dir):
+def mysql_backup(user,password,host,db,backup_dir,stransaction_flag):
+    transaction = ''
+    if stransaction_flag:
+        transaction = '--single-transaction'
     file_path =  backup_dir + "/" + db + ".bak.sql.gz"
-    dumpcmd = "mysqldump -u" + user + " -p" + password + " -h" + host + " " + db + " 2>/dev/null | gzip -c > " + file_path
+    dumpcmd = "mysqldump " + transaction + " -u" + user + " -p" + password + " -h" + host + " " + db + " 2>/dev/null | gzip -c > " + file_path
     try:
         os.system(dumpcmd)
     except Exception as e:
@@ -142,7 +145,7 @@ if __name__=="__main__":
             print "Nothing to delete"
 
     elif args.action == 'backup':
-        for opt in ['db_user','db_pass','db_names']:
+        for opt in ['db_user','db_pass','db_names','db_single_transaction']:
             if not config.has_option('MYSQL', opt):
                 print 'Not enough db params'
                 exit(1)
@@ -151,11 +154,12 @@ if __name__=="__main__":
         db_host = config.get('MYSQL','db_host')
         db_names = config.get('MYSQL','db_names').split(',')
         backup_dir = config.get('MYSQL','backup_dir')
+        db_stransaction_flag = config.getbool('MYSQL','db_single_transaction')
 
         print "Backup started"
 
         for db_name in db_names:
-            file = mysql_backup(db_user,db_pass,db_host,db_name,backup_dir)
+            file = mysql_backup(db_user,db_pass,db_host,db_name,backup_dir,db_stransaction_flag)
             if os.path.isfile(file):
                 backups.push(file)
             else:
