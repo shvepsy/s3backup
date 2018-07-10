@@ -1,11 +1,11 @@
 # require python-configparser, python-boto3, mysql-client, gzip
 import boto3, datetime, os, argparse, configparser
-
+from botocore.client import Config
 
 def s3init(aws_access_key_id,aws_secret_access_key,bucket_target):
     try:
         session = boto3.Session(aws_access_key_id = aws_access_key_id,aws_secret_access_key = aws_secret_access_key)
-        s3 = session.resource('s3')
+        s3 = session.resource('s3',config=Config(signature_version='s3v4'))
     except Exception as e:
         print "Cant connect to s3: " + str(e)
         exit(1)
@@ -168,59 +168,3 @@ if __name__=="__main__":
 
     else:
         print "Not implemented action"
-
-    #
-    # backups.list()
-    #
-    # if backups.push('222.tar.gz'):
-    #     print "Push OK"
-    #
-    # backups.list()
-    #
-    # if backups.delete('222.tar.gz-09072018'):
-    #     print "Delete OK"
-    #
-    # if backups.rotate():
-    #     print "Rotate OK"
-    #
-    #
-    #
-
-#date = datetime.datetime.now().strftime("-%d%m%Y")
-
-#file = '222.tar.gz'
-#dumpname = file + date
-
-#if os.path.isfile(file):
-#    bucket.upload_file(file, dumpname)
-#    print 'Dump saved as %s' % dumpname
-
-
-#get_last_modified = lambda obj: int(obj.last_modified.strftime('%s'))
-#saved_dumps = bucket.objects.all()
-#sorted_dumps = sorted(saved_dumps, key=get_last_modified)
-# Download
-#if len(sorted_dumps) > 0:
-#    last_dump_key = sorted_dumps[0].key
-#    bucket.download_file(last_dump_key,'lastbak.tar.gz')
-
-
-# Rotation
-
-#for obj in sorted_dumps:
-#    print obj.key
-
-#if len(list(saved_dumps)) > dumps_count - 1:
-#    print "Require rotation. Deleting: "
-
-#    dumps_exceeding_count = len(list(saved_dumps)) - dumps_count + 1
-#    print dumps_exceeding_count
-#    exceeding_dumps = []
-#    if dumps_exceeding_count > 0:
-#        exceeding_dumps = sorted_dumps[0:dumps_exceeding_count]
-
-    #print [obj.key for obj in exceeding_dumps]
-#    for obj in exceeding_dumps:
-#        print obj.key
-#        obj.get().delete()
-#        obj.delete()
