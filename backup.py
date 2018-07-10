@@ -154,7 +154,7 @@ if __name__=="__main__":
         db_host = config.get('MYSQL','db_host')
         db_names = config.get('MYSQL','db_names').split(',')
         backup_dir = config.get('MYSQL','backup_dir')
-        db_stransaction_flag = config.getbool('MYSQL','db_single_transaction')
+        db_stransaction_flag = config.getboolean('MYSQL','db_single_transaction')
 
         print "Backup started"
 
