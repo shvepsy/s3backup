@@ -42,7 +42,7 @@ class s3Backups:
             print obj.key
 
     def empty(self):
-        return len(self.sorted_dumps) < 0
+        return len(self.sorted_dumps) <= 0
 
     def pull(self,filename=''):
         if not self.empty():
